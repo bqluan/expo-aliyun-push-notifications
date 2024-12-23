@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "expo-aliyun-push-example",
-    "slug": "expo-aliyun-push-example",
+    "name": "expo-aliyun-push-notifications-example",
+    "slug": "expo-aliyun-push-notifications-example",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

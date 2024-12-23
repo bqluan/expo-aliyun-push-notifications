@@ -4,8 +4,8 @@ public class ExpoAliyunPushModule: Module {
   public func definition() -> ModuleDefinition {
     // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
     // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('ExpoAliyunPush')` in JavaScript.
-    Name("ExpoAliyunPush")
+    // The module will be accessible from `requireNativeModule('ExpoAliyunPushNotifications')` in JavaScript.
+    Name("ExpoAliyunPushNotifications")
 
     // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
     Constants([

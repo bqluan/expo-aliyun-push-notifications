@@ -1,7 +1,7 @@
 {
-  "name": "expo-aliyun-push",
+  "name": "expo-aliyun-push-notifications",
   "version": "0.1.0",
-  "description": "Aliyun push SDK wrapper for React Native and Expo apps.",
+  "description": "Provides an API to receive and respond to Aliyun Push notifications.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -18,16 +18,16 @@
   "keywords": [
     "react-native",
     "expo",
-    "expo-aliyun-push",
-    "ExpoAliyunPush"
+    "expo-aliyun-push-notifications",
+    "ExpoAliyunPushNotifications"
   ],
-  "repository": "https://github.com/bqluan/expo-aliyun-push",
+  "repository": "https://github.com/bqluan/expo-aliyun-push-notifications",
   "bugs": {
-    "url": "https://github.com/bqluan/expo-aliyun-push/issues"
+    "url": "https://github.com/bqluan/expo-aliyun-push-notifications/issues"
   },
   "author": "Ethan L <bingqian.luan@icloud.com> (bqluan)",
   "license": "MIT",
-  "homepage": "https://github.com/bqluan/expo-aliyun-push#readme",
+  "homepage": "https://github.com/bqluan/expo-aliyun-push-notifications#readme",
   "dependencies": {},
   "devDependencies": {
     "@types/react": "~18.3.12",

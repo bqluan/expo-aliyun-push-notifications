@@ -21,7 +21,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 
-rootProject.name = 'expo-aliyun-push-example'
+rootProject.name = 'expo-aliyun-push-notifications-example'
 
 dependencyResolutionManagement {
   versionCatalogs {

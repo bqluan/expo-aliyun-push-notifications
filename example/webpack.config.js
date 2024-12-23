@@ -6,7 +6,7 @@ module.exports = async (env, argv) => {
     {
       ...env,
       babel: {
-        dangerouslyAddModulePathsToTranspile: ['expo-aliyun-push'],
+        dangerouslyAddModulePathsToTranspile: ['expo-aliyun-push-notifications'],
       },
     },
     argv

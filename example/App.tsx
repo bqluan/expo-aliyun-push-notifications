@@ -1,25 +1,25 @@
 import { useEvent } from "expo";
-import ExpoAliyunPush from "expo-aliyun-push";
+import ExpoAliyunPushNotifications from "expo-aliyun-push-notifications";
 import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 export default function App() {
-  const onChangePayload = useEvent(ExpoAliyunPush, "onChange");
+  const onChangePayload = useEvent(ExpoAliyunPushNotifications, "onChange");
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
         <Text style={styles.header}>Module API Example</Text>
         <Group name="Constants">
-          <Text>{ExpoAliyunPush.PI}</Text>
+          <Text>{ExpoAliyunPushNotifications.PI}</Text>
         </Group>
         <Group name="Functions">
-          <Text>{ExpoAliyunPush.hello()}</Text>
+          <Text>{ExpoAliyunPushNotifications.hello()}</Text>
         </Group>
         <Group name="Async functions">
           <Button
             title="Set value"
             onPress={async () => {
-              await ExpoAliyunPush.setValueAsync("Hello from JS!");
+              await ExpoAliyunPushNotifications.setValueAsync("Hello from JS!");
             }}
           />
         </Group>

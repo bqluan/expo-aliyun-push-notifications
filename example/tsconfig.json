@@ -3,8 +3,8 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "expo-aliyun-push": ["../src/index"],
-      "expo-aliyun-push/*": ["../src/*"]
+      "expo-aliyun-push-notifications": ["../src/index"],
+      "expo-aliyun-push-notifications/*": ["../src/*"]
     }
   }
 }
