@@ -1,5 +1,6 @@
 package com.github.bqluan.aliyunpush
 
+import com.alibaba.sdk.android.push.noonesdk.PushServiceFactory
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.net.URL
@@ -30,6 +31,13 @@ class ExpoAliyunPushNotificationsModule : Module() {
     // Defines a JavaScript function that always returns a Promise and whose native code
     // is by default dispatched on the different thread than the JavaScript runtime runs on.
     AsyncFunction("setValueAsync") { value: String ->
+      // Send an event to JavaScript.
+      sendEvent("onChange", mapOf(
+        "value" to value
+      ))
+    }
+
+    AsyncFunction("init") { value: String ->
       // Send an event to JavaScript.
       sendEvent("onChange", mapOf(
         "value" to value
