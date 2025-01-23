@@ -1,4 +1,4 @@
-package com.github.bqluan.aliyunpush.example
+package org.ccpit.dendenmushi
 
 import android.app.Application
 import android.content.res.Configuration

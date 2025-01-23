@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <key>Ali_Push_App_Key</key>
+    <string>335275515</string>
+    <key>Ali_Push_App_Secret</key>
+    <string>a4b842e7aa074469af57f0531e58d2a7</string>
     <key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
     <key>CFBundleDevelopmentRegion</key>

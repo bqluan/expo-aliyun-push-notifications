@@ -1,4 +1,4 @@
-package com.github.bqluan.aliyunpush.example
+package org.ccpit.dendenmushi
 
 import android.os.Build
 import android.os.Bundle

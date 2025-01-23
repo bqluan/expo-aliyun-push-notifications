@@ -26,6 +26,12 @@ export default function App() {
         <Group name="Events">
           <Text>{onChangePayload?.value}</Text>
         </Group>
+        <Group name="ApiKeys">
+          <Text>API key: {ExpoAliyunPushNotifications.getApiKey()}</Text>
+        </Group>
+        <Group name="DeviceId">
+          <Text>device id: {onChangePayload?.deviceId}</Text>
+        </Group>
       </ScrollView>
     </SafeAreaView>
   );

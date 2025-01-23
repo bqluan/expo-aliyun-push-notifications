@@ -5,6 +5,8 @@ import { ExpoAliyunPushModuleEvents } from "./ExpoAliyunPushNotifications.types"
 declare class ExpoAliyunPushModule extends NativeModule<ExpoAliyunPushModuleEvents> {
   PI: number;
   hello(): string;
+  getApiKey(): string;
+  getDeviceId(): string;
   setValueAsync(value: string): Promise<void>;
   init(): Promise<void>;
 }

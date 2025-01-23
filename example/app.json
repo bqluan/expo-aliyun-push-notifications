@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.github.bqluan.aliyunpush.example"
-    }
+      "package": "org.ccpit.dendenmushi"
+    },
+    "plugins": [["../app.plugin.js", { "aliPushAppKey": "335275515","aliPushAppSecret": "a4b842e7aa074469af57f0531e58d2a7" }]]
   }
 }

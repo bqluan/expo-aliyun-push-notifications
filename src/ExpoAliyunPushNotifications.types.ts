@@ -4,4 +4,5 @@ export type ExpoAliyunPushModuleEvents = {
 
 export type ChangeEventPayload = {
   value: string;
+  deviceId: string;
 };
