@@ -44,6 +44,17 @@ class ExpoAliyunPushNotificationsModule : Module() {
       "Hello world! 👋"
     }
 
+    // 点击通知事件
+    Events(NOTIFICATION_OPENED_EVENT)
+
+    Function("sendNotificationOpenedEvent") { message: String ->
+      // 发送事件
+      sendEvent(NOTIFICATION_OPENED_EVENT, mapOf(
+          "message" to message,
+          "timestamp" to System.currentTimeMillis()
+      ))
+    }
+
     Function("getApiKey") {
       val applicationInfo = appContext?.reactContext?.packageManager?.getApplicationInfo(appContext?.reactContext?.packageName.toString(), PackageManager.GET_META_DATA)
       val metaData = applicationInfo?.metaData
@@ -52,6 +63,13 @@ class ExpoAliyunPushNotificationsModule : Module() {
           is Int -> value.toString()
           else -> null
       }
+    }
+
+    Function("getDeviceId") {
+        val service = PushServiceFactory.getCloudPushService()
+        val deviceId = service?.deviceId
+        Log.d(TAG, "Device ID: $deviceId")
+        return@Function deviceId
     }
 
     // Defines a JavaScript function that always returns a Promise and whose native code
@@ -96,15 +114,13 @@ class ExpoAliyunPushNotificationsModule : Module() {
         val service = PushServiceFactory.getCloudPushService()
         service.setDebug(true)
         service.setLogLevel(CloudPushService.LOG_DEBUG)
-        initNotificationChannel()
+        service.setPushIntentService(MyMessageIntentService::class.java)
+        createNotificationChannel()
         service.register(app, object : CommonCallback {
             override fun onSuccess(result: String?) {
                 Log.d(TAG, "Device registered successfully: $result")
                 val deviceId = service?.deviceId
                 Log.d(TAG, "Device ID: $deviceId")
-                sendEvent("onChange", mapOf(
-                    "deviceId" to deviceId
-                ))
             }
 
             override fun onFailed(code: String?, message: String?) {
@@ -116,7 +132,7 @@ class ExpoAliyunPushNotificationsModule : Module() {
     /**
      * 初始化通知渠道
      */
-    private fun initNotificationChannel() {
+    private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // 使用 appContext.reactContext 获取 Context
             val context = appContext.reactContext ?: return

@@ -9,7 +9,7 @@ interface AliPushConfig {
   aliPushAppKey: string;
   aliPushAppSecret: string;
 }
-const withMyApiKey: ConfigPlugin<AliPushConfig> = (config, { aliPushAppKey, aliPushAppSecret }) => {
+const withAliyunConfig: ConfigPlugin<AliPushConfig> = (config, { aliPushAppKey, aliPushAppSecret }) => {
   config = withInfoPlist(config, config => {
     config.modResults['Ali_Push_App_Key'] = aliPushAppKey;
     config.modResults['Ali_Push_App_Secret'] = aliPushAppSecret;
@@ -30,10 +30,11 @@ const withMyApiKey: ConfigPlugin<AliPushConfig> = (config, { aliPushAppKey, aliP
       'Ali_Push_App_Secret',
       aliPushAppSecret
     );
+
     return config;
   });
 
   return config;
 };
 
-export default withMyApiKey;
+export default withAliyunConfig;
