@@ -22,6 +22,7 @@ class MyMessageIntentService: AliyunMessageIntentService() {
     // 点击通知回调。点击通知会回调该方法。
     override fun onNotificationOpened(context: Context?, title: String?, summary: String?, extraMap: String?) {
         Log.d(TAG, "onNotificationOpened  title: $title, summary: $summary, extraMap: $extraMap")
+        EventManager.sendEvent("onNotificationOpened", extraMap)
     }
 
     // 删除通知的回调。删除通知时会回调该方法。
@@ -39,7 +40,7 @@ class MyMessageIntentService: AliyunMessageIntentService() {
         context?.let {
             Log.d(TAG, "onNotification  title: $title, summary: $summary, extraMap: $extraMap")
             // Toast.makeText(it, "service 收到了通知", Toast.LENGTH_SHORT).show()// 显示通知
-            showNotification(context, title, summary)
+            // showNotification(context, title, summary)
         }
     }
 
@@ -55,24 +56,24 @@ class MyMessageIntentService: AliyunMessageIntentService() {
     // 点击无跳转逻辑通知的回调，点击无跳转逻辑（open=4）通知时回调该方法（v2.3.2及以上版本支持）。
     override fun onNotificationClickedWithNoAction(
         p0: Context?,
-        p1: String?,
-        p2: String?,
-        p3: String?
+        title: String?,
+        summary: String?,
+        extraMap: String?
     ) {
-
+        Log.d(TAG, "onNotificationClickedWithNoAction  title: $title, summary: $summary, extraMap: $extraMap")
     }
 
     // 通知在应用内回调，该方法仅在showNotificationNow返回false时才会被回调，且此时不调用onNotification，此时需要您自己处理通知逻辑。
     override fun onNotificationReceivedInApp(
-        p0: Context?,
-        p1: String?,
-        p2: String?,
-        p3: MutableMap<String, String>?,
-        p4: Int,
-        p5: String?,
-        p6: String?
+        context: Context?,
+        title: String?,
+        summary: String?,
+        extraMap: MutableMap<String, String>?,
+        openType: Int,
+        openActivity: String?,
+        openUrl: String?
     ) {
-
+        Log.d(TAG, "onNotificationReceivedInApp  title: $title, summary: $summary, extraMap: $extraMap")
     }
 
     // 用通知通道显示通知
@@ -109,8 +110,6 @@ class MyMessageIntentService: AliyunMessageIntentService() {
                 PendingIntent.FLAG_IMMUTABLE
             )
         }
-
-        Log.d(TAG, "showNotification  channelId: ${ExpoAliyunPushNotificationsModule.CHANNEL_ID}")
 
         // 创建通知
         val notification = NotificationCompat.Builder(context, ExpoAliyunPushNotificationsModule.CHANNEL_ID)

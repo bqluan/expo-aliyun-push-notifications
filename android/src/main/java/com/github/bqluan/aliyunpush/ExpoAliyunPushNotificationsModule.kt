@@ -12,12 +12,21 @@ import com.alibaba.sdk.android.push.CloudPushService
 import com.alibaba.sdk.android.push.CommonCallback
 import com.alibaba.sdk.android.push.noonesdk.PushServiceFactory
 import com.alibaba.sdk.android.push.noonesdk.PushInitConfig
+/*import com.alibaba.sdk.android.push.HonorRegister
+import com.alibaba.sdk.android.push.huawei.HuaWeiRegister
+import com.alibaba.sdk.android.push.register.MeizuRegister
+import com.alibaba.sdk.android.push.register.MiPushRegister
+import com.alibaba.sdk.android.push.register.OppoRegister
+import com.alibaba.sdk.android.push.register.VivoRegister*/
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import android.content.pm.PackageManager
 import java.net.URL
 
 class ExpoAliyunPushNotificationsModule : Module() {
+    init {
+        EventManager.setModule(this)
+    }
   // Each module class must implement the definition function. The definition consists of components
   // that describes the module's functionality and behavior.
   // See https://docs.expo.dev/modules/module-api for more details about available components.
@@ -46,14 +55,6 @@ class ExpoAliyunPushNotificationsModule : Module() {
 
     // 点击通知事件
     Events(NOTIFICATION_OPENED_EVENT)
-
-    Function("sendNotificationOpenedEvent") { message: String ->
-      // 发送事件
-      sendEvent(NOTIFICATION_OPENED_EVENT, mapOf(
-          "message" to message,
-          "timestamp" to System.currentTimeMillis()
-      ))
-    }
 
     Function("getApiKey") {
       val applicationInfo = appContext?.reactContext?.packageManager?.getApplicationInfo(appContext?.reactContext?.packageName.toString(), PackageManager.GET_META_DATA)
@@ -116,6 +117,7 @@ class ExpoAliyunPushNotificationsModule : Module() {
         service.setLogLevel(CloudPushService.LOG_DEBUG)
         service.setPushIntentService(MyMessageIntentService::class.java)
         createNotificationChannel()
+        /*initOthers()*/
         service.register(app, object : CommonCallback {
             override fun onSuccess(result: String?) {
                 Log.d(TAG, "Device registered successfully: $result")
@@ -151,6 +153,26 @@ class ExpoAliyunPushNotificationsModule : Module() {
             mNotificationManager.createNotificationChannel(mChannel)
         }
     }
+
+    /*private fun initOthers() {
+        val app = appContext.reactContext?.applicationContext as Application
+        HuaWeiRegister.register(app) // 接入华为辅助推送
+        HonorRegister.register(app)  // 荣耀推送
+        MiPushRegister.register(app, getMetaValue("Xiaomi_App_Id"), getMetaValue("Xiaomi_App_Key")) // 初始化小米辅助推送
+        VivoRegister.registerAsync(appContext.reactContext) // 接入vivo辅助推送
+        OppoRegister.registerAsync(appContext.reactContext, getMetaValue("Oppo_App_Key"), getMetaValue("Oppo_App_Secret")) // OPPO辅助推送
+        MeizuRegister.registerAsync(appContext.reactContext, getMetaValue("Meizu_App_Id"), getMetaValue("Meizu_App_Key")) // 接入魅族辅助推送
+    }
+
+    private fun getMetaValue(name: String): String? {
+        val applicationInfo = appContext?.reactContext?.packageManager?.getApplicationInfo(appContext?.reactContext?.packageName.toString(), PackageManager.GET_META_DATA)
+        val metaData = applicationInfo?.metaData
+        return when (val value = metaData?.get(name)) {
+            is String -> value
+            is Int -> value.toString()
+            else -> null
+        }
+    }*/
 
     companion object {
         private const val NOTIFICATION_OPENED_EVENT = "onNotificationOpened"
