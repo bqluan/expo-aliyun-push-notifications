@@ -5,6 +5,7 @@ import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
 export default function App() {
   const onChangePayload = useEvent(ExpoAliyunPushNotifications, "onChange");
   const onNotificationOpenedPayload = useEvent(ExpoAliyunPushNotifications, "onNotificationOpened");
+  const onDeviceRegisteredSuccessPayload = useEvent(ExpoAliyunPushNotifications, "onDeviceRegisteredSuccess");
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,6 +33,9 @@ export default function App() {
         </Group>
         <Group name="Notification">
           <Text>notification message: {onNotificationOpenedPayload?.message}</Text>
+        </Group>
+        <Group name="Device">
+          <Text>device id: {onDeviceRegisteredSuccessPayload?.deviceId}</Text>
         </Group>
       </ScrollView>
     </SafeAreaView>

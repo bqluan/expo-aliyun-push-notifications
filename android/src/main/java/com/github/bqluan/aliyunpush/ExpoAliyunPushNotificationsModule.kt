@@ -56,6 +56,8 @@ class ExpoAliyunPushNotificationsModule : Module() {
     // 点击通知事件
     Events(NOTIFICATION_OPENED_EVENT)
 
+    Events(DEVICE_REGISTERED_SUCCESS_EVENT)
+
     Function("getApiKey") {
       val applicationInfo = appContext?.reactContext?.packageManager?.getApplicationInfo(appContext?.reactContext?.packageName.toString(), PackageManager.GET_META_DATA)
       val metaData = applicationInfo?.metaData
@@ -122,6 +124,9 @@ class ExpoAliyunPushNotificationsModule : Module() {
             override fun onSuccess(result: String?) {
                 Log.d(TAG, "Device registered successfully: $result")
                 val deviceId = service?.deviceId
+                sendEvent(DEVICE_REGISTERED_SUCCESS_EVENT, mapOf(
+                    "deviceId" to service?.deviceId
+                ))
                 Log.d(TAG, "Device ID: $deviceId")
             }
 
@@ -176,6 +181,7 @@ class ExpoAliyunPushNotificationsModule : Module() {
 
     companion object {
         private const val NOTIFICATION_OPENED_EVENT = "onNotificationOpened"
+        private const val DEVICE_REGISTERED_SUCCESS_EVENT = "onDeviceRegisteredSuccess"
         const val TAG = "ExpoAliyunPushNotifications"
         const val CHANNEL_ID = "dendenmushi_aliyun_push_channel"
         const val CHANNEL_NAME = "dendenmushi_with_aliyun_push_channel"
