@@ -107,6 +107,13 @@ class ExpoAliyunPushNotificationsModule : Module() {
             is Int -> value.toString()
             else -> null
         }
+        Log.d(TAG, "appKey: $appKey")
+        Log.d(TAG, "appSecret: $appSecret")
+
+        if (appKey.isNullOrEmpty() || appSecret.isNullOrEmpty()) {
+            Log.e(TAG, "Ali_Push_App_Key or Ali_Push_App_Secret is null")
+            return@initPushSdk
+        }
 
         val app = appContext.reactContext?.applicationContext as Application
         PushServiceFactory.init(PushInitConfig.Builder()
