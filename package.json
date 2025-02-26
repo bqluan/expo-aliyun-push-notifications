@@ -1,6 +1,6 @@
 {
   "name": "expo-aliyun-push-notifications",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Provides an API to receive and respond to Aliyun Push notifications.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

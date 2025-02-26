@@ -11,6 +11,9 @@ import androidx.core.app.NotificationCompat
 import com.alibaba.sdk.android.push.AliyunMessageIntentService
 import com.alibaba.sdk.android.push.MessageReceiver
 import com.alibaba.sdk.android.push.notification.CPushMessage
+import android.app.ActivityManager
+import android.app.ActivityManager.RunningAppProcessInfo
+import org.json.JSONObject
 
 /**
  * 通过Service 处理下发通知和消息
@@ -48,7 +51,22 @@ class MyMessageIntentService: AliyunMessageIntentService() {
     override fun onMessage(context: Context?, message: CPushMessage?) {
         context?.apply {
             message?.let {
-                Log.d(TAG, "onMessage  title: ${it.title}, content: ${it.content}, messageId: ${it.messageId}")
+                Log.d(
+                    TAG,
+                    "onMessage  title: ${it.title}, content: ${it.content}, messageId: ${it.messageId}"
+                )
+                val isBackground: Boolean = isBackground(context)
+                if (isBackground) {
+                    //后台，弹通知
+                    showNotification(context, it.title, it.content)
+                } else {
+                    //前台，发消息
+                    val jsonData = JSONObject().apply {
+                        put("title", it.title ?: "")
+                        put("content", it.content ?: "")
+                    }.toString()
+                    EventManager.sendEvent("onNotificationOpened", jsonData)
+                }
             }
         }
     }
@@ -134,4 +152,18 @@ class MyMessageIntentService: AliyunMessageIntentService() {
             return android.R.drawable.ic_dialog_info
         }
     }
+   fun isBackground(context: Context): Boolean {
+       val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+       val appProcesses = activityManager.runningAppProcesses
+       for (appProcess in appProcesses) {
+           if (appProcess.processName == context.packageName) {
+               if (appProcess.importance == RunningAppProcessInfo.IMPORTANCE_BACKGROUND) {
+                   return true
+               } else {
+                   return false
+               }
+           }
+       }
+       return false
+   }
 }

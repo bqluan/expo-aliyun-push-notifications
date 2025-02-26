@@ -46,17 +46,12 @@ class ExpoAliyunPushNotificationsModule : Module() {
     )
 
     // Defines event names that the module can send to JavaScript.
-    Events("onChange")
+    Events(NOTIFICATION_OPENED_EVENT,DEVICE_REGISTERED_SUCCESS_EVENT,"onChange")
 
     // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
     Function("hello") {
       "Hello world! 👋"
     }
-
-    // 点击通知事件
-    Events(NOTIFICATION_OPENED_EVENT)
-
-    Events(DEVICE_REGISTERED_SUCCESS_EVENT)
 
     Function("getApiKey") {
       val applicationInfo = appContext?.reactContext?.packageManager?.getApplicationInfo(appContext?.reactContext?.packageName.toString(), PackageManager.GET_META_DATA)
@@ -186,6 +181,14 @@ class ExpoAliyunPushNotificationsModule : Module() {
         }
     }*/
 
+    fun notifyPushReceived(message: String) {
+        this@ExpoAliyunPushNotificationsModule.sendEvent(
+            NOTIFICATION_OPENED_EVENT,
+            mapOf(
+                "message" to message
+            )
+        )
+    }
     companion object {
         private const val NOTIFICATION_OPENED_EVENT = "onNotificationOpened"
         private const val DEVICE_REGISTERED_SUCCESS_EVENT = "onDeviceRegisteredSuccess"

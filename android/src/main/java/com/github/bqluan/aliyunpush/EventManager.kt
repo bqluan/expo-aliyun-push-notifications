@@ -9,9 +9,9 @@ object EventManager {
 
     fun sendEvent(eventName: String, message: String?) {
         moduleInstance?.let { module ->
-            module.sendEvent(eventName, mapOf(
-                "message" to message,
-            ))
+            message?.let {
+                module.notifyPushReceived(message)
+            }
         }
     }
 }
