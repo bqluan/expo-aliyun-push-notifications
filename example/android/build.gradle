@@ -33,6 +33,13 @@ allprojects {
             // Android JSC is installed from npm
             url(new File(['node', '--print', "require.resolve('jsc-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), '../dist'))
         }
+        maven {
+            url 'https://maven.aliyun.com/nexus/content/repositories/releases/'
+        }
+        // 配置HMS Core SDK的Maven仓地址，集成华为通道需要。
+        maven {
+            url 'https://developer.huawei.com/repo/'
+        }
 
         google()
         mavenCentral()
