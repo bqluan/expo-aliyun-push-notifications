@@ -9,11 +9,30 @@ import {
 interface AliPushConfig {
   aliPushAppKey: string;
   aliPushAppSecret: string;
+  oppoAppKey: string;
+  oppoAppSecret: string;
+  xiaomiAppId: string;
+  xiaomiAppKey: string;
+  vivoAppKey: string;
+  vivoAppId: string;
+  huaweiAppId: string;
+  honorAppId: string;
 }
-const withAliyunConfig: ConfigPlugin<AliPushConfig> = (config, { aliPushAppKey, aliPushAppSecret }) => {
+
+const withAliyunConfig: ConfigPlugin<AliPushConfig> = (config, props) => {
   config = withInfoPlist(config, config => {
-    config.modResults['Ali_Push_App_Key'] = aliPushAppKey;
-    config.modResults['Ali_Push_App_Secret'] = aliPushAppSecret;
+    Object.assign(config.modResults, {
+      Ali_Push_App_Key: props.aliPushAppKey,
+      Ali_Push_App_Secret: props.aliPushAppSecret,
+      Oppo_App_Key: props.oppoAppKey,
+      Oppo_App_Secret: props.oppoAppSecret,
+      Xiaomi_App_Id: props.xiaomiAppId,
+      Xiaomi_App_Key: props.xiaomiAppKey,
+      'com.vivo.push.api_key': props.vivoAppKey,
+      'com.vivo.push.app_id': props.vivoAppId,
+      'com.huawei.hms.client.appid': props.huaweiAppId,
+      'com.hihonor.push.app_id': props.honorAppId,
+    });
     return config;
   });
 
@@ -21,28 +40,30 @@ const withAliyunConfig: ConfigPlugin<AliPushConfig> = (config, { aliPushAppKey, 
     const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
     const { manifest } = config.modResults;
 
-    AndroidConfig.Manifest.addMetaDataItemToMainApplication(
-      mainApplication,
-      'Ali_Push_App_Key',
-      aliPushAppKey
-    );
+    [
+      ['Ali_Push_App_Key', props.aliPushAppKey],
+      ['Ali_Push_App_Secret', props.aliPushAppSecret],
+      ['Oppo_App_Key', props.oppoAppKey],
+      ['Oppo_App_Secret', props.oppoAppSecret],
+      ['Xiaomi_App_Id', props.xiaomiAppId],
+      ['Xiaomi_App_Key', props.xiaomiAppKey],
+      ['com.vivo.push.api_key', props.vivoAppKey],
+      ['com.vivo.push.app_id', props.vivoAppId],
+      ['com.huawei.hms.client.appid', props.huaweiAppId],
+      ['com.hihonor.push.app_id', props.honorAppId]
+    ].forEach(([key, value]) => {
+      AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, key, value);
+    });
 
-    AndroidConfig.Manifest.addMetaDataItemToMainApplication(
-      mainApplication,
-      'Ali_Push_App_Secret',
-      aliPushAppSecret
-    );
-    // 需要添加的权限列表
-    const requiredPermissions = [
+    addPermissionsIfMissing(manifest, [
       'POST_NOTIFICATIONS',
       'ACCESS_NETWORK_STATE',
-      'DOWNLOAD_WITHOUT_NOTIFICATION',
-    ];
-    addPermissionsIfMissing(manifest, requiredPermissions);
+      'DOWNLOAD_WITHOUT_NOTIFICATION'
+    ]);
 
     return config;
   });
-  // 修改 android/build.gradle，添加阿里云和华为的 maven 仓库地址
+
   config = withProjectBuildGradle(config, config => {
     if (!config.modResults.contents.includes("https://maven.aliyun.com/nexus/content/repositories/releases/")) {
       config.modResults.contents = config.modResults.contents.replace(

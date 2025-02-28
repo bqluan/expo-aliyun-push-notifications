@@ -53,4 +53,11 @@ dependencies {
   implementation 'androidx.core:core-ktx:1.7.0'
   implementation "androidx.localbroadcastmanager:localbroadcastmanager:1.1.0"
   implementation "com.aliyun.ams:alicloud-android-push:3.9.2"
+  implementation "com.aliyun.ams:alicloud-android-third-push-huawei:3.9.2"
+  implementation "com.aliyun.ams:alicloud-android-third-push-xiaomi:3.9.2"
+  implementation "com.aliyun.ams:alicloud-android-third-push-oppo:3.9.2"
+  implementation "com.aliyun.ams:alicloud-android-third-push-vivo:3.9.2"
+  implementation "com.aliyun.ams:alicloud-android-third-push-honor:3.9.2"
+  implementation 'com.aliyun.ams:alicloud-android-third-push:3.9.2'
+  implementation 'com.huawei.hms:push:5.3.0.301'
 }
