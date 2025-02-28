@@ -14,7 +14,6 @@ import com.alibaba.sdk.android.push.noonesdk.PushServiceFactory
 import com.alibaba.sdk.android.push.noonesdk.PushInitConfig
 import com.alibaba.sdk.android.push.HonorRegister
 import com.alibaba.sdk.android.push.huawei.HuaWeiRegister
-import com.alibaba.sdk.android.push.register.MeizuRegister
 import com.alibaba.sdk.android.push.register.MiPushRegister
 import com.alibaba.sdk.android.push.register.OppoRegister
 import com.alibaba.sdk.android.push.register.VivoRegister
