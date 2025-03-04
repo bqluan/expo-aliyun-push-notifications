@@ -25,7 +25,11 @@ class MyMessageIntentService: AliyunMessageIntentService() {
     // 点击通知回调。点击通知会回调该方法。
     override fun onNotificationOpened(context: Context?, title: String?, summary: String?, extraMap: String?) {
         Log.d(TAG, "onNotificationOpened  title: $title, summary: $summary, extraMap: $extraMap")
-        EventManager.sendEvent("onNotificationOpened", extraMap)
+        val jsonData = JSONObject().apply {
+                                put("title", title ?: "")
+                                put("content", extraMap ?: "")
+                            }.toString()
+                            EventManager.sendEvent("onNotificationOpened", jsonData)
     }
 
     // 删除通知的回调。删除通知时会回调该方法。
