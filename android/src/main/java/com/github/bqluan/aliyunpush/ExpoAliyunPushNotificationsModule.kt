@@ -21,6 +21,8 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import android.content.pm.PackageManager
 import java.net.URL
+import android.os.Handler
+import android.os.Looper
 
 class ExpoAliyunPushNotificationsModule : Module() {
     init {
@@ -125,9 +127,12 @@ class ExpoAliyunPushNotificationsModule : Module() {
             override fun onSuccess(result: String?) {
                 Log.d(TAG, "Device registered successfully: $result")
                 val deviceId = service?.deviceId
-                sendEvent(DEVICE_REGISTERED_SUCCESS_EVENT, mapOf(
-                    "deviceId" to service?.deviceId
-                ))
+                // 需要优化
+                Handler(Looper.getMainLooper()).postDelayed({
+                   this@ExpoAliyunPushNotificationsModule.sendEvent(
+                      DEVICE_REGISTERED_SUCCESS_EVENT,
+                      mapOf("deviceId" to deviceId))
+                }, 4000) // 延迟 4 秒
                 Log.d(TAG, "Device ID: $deviceId")
             }
 
