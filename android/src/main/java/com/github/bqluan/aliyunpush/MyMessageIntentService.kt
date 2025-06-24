@@ -15,6 +15,7 @@ import android.app.ActivityManager
 import android.app.ActivityManager.RunningAppProcessInfo
 import org.json.JSONObject
 
+import com.github.bqluan.aliyunpush.TargetActivity
 /**
  * 通过Service 处理下发通知和消息
  */
@@ -60,16 +61,19 @@ class MyMessageIntentService: AliyunMessageIntentService() {
                     "onMessage  title: ${it.title}, content: ${it.content}, messageId: ${it.messageId}"
                 )
                 val isBackground: Boolean = isBackground(context)
-                if (isBackground) {
-                    //后台，弹通知
-                    showNotification(context, it.title, it.content)
-                } else {
-                    //前台，发消息
+                var msgType = ""
+                try {msgType = JSONObject(it.content).getString("type")}catch (e: Exception) {}
+                if (msgType === "Conversation") {
+
                     val jsonData = JSONObject().apply {
                         put("title", it.title ?: "")
                         put("content", it.content ?: "")
                     }.toString()
                     EventManager.sendEvent("onNotificationOpened", jsonData)
+
+                } else {
+
+                    showNotification(context, it.title, it.content)
                 }
             }
         }
@@ -113,23 +117,31 @@ class MyMessageIntentService: AliyunMessageIntentService() {
             }
         }
 
+        // 创建跳转到指定Activity的Intent
+            val targetIntent = Intent(context, TargetActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                 putExtra("notification_title", title) // 添加标题参数
+                        putExtra("notification_content", content) // 添加内容参数
+            }
         // 创建 PendingIntent
         val pendingIntent = if (mainActivityClass != null) {
             val intent = Intent(context, mainActivityClass)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            intent.putExtra("title", title) // 添加标题参数
+            intent.putExtra("content", content) // 添加内容参数
             PendingIntent.getActivity(
                 context,
                 0,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE
+                targetIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         } else {
             // 如果无法获取 MainActivity，使用默认启动 Intent
             PendingIntent.getActivity(
                 context,
                 0,
-                packageManager.getLaunchIntentForPackage(context.packageName),
-                PendingIntent.FLAG_IMMUTABLE
+                targetIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         }
 
@@ -137,7 +149,11 @@ class MyMessageIntentService: AliyunMessageIntentService() {
         val notification = NotificationCompat.Builder(context, ExpoAliyunPushNotificationsModule.CHANNEL_ID)
             .setSmallIcon(getAppIcon(context))
             .setContentTitle(title)
-            .setContentText(content)
+            .setContentText( try {
+                                    JSONObject(content).getString("subtitle") // 直接提取 subtitle
+                                } catch (e: Exception) {
+                                    "点击查看详情"
+                                })
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
