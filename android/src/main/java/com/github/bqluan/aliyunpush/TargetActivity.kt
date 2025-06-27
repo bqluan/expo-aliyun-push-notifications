@@ -51,8 +51,7 @@ class TargetActivity : Activity(), PopupNotifyClickListener, OnPushParseFailedLi
         val content = intent?.getStringExtra("notification_content")
         if (title != null && content != null) {
             handler.postDelayed({
-                val fallbackIntent =
-                    Intent(this, Class.forName("org.ccpit.dendenmushi.MainActivity"))
+                val fallbackIntent = Intent(this, getMainActivity())
                 fallbackIntent.putExtra("title", title)
                 fallbackIntent.putExtra("content", content)
                 startActivity(fallbackIntent)
@@ -66,6 +65,18 @@ class TargetActivity : Activity(), PopupNotifyClickListener, OnPushParseFailedLi
         mPopupNotifyClick.onNewIntent(intent)
     }
 
+    fun getMainActivity(): Class<*>? {
+        val packageManager = this.packageManager
+        val launchIntent = packageManager.getLaunchIntentForPackage(this.packageName)
+        return launchIntent?.component?.className?.let {
+            try {
+                Class.forName(it)
+            } catch (e: ClassNotFoundException) {
+                Class.forName("org.ccpit.dendenmushi.MainActivity")
+            }
+        }
+    }
+
     /**
      * 实现通知打开回调方法，获取通知相关信息
      * @param title     标题
@@ -75,7 +86,7 @@ class TargetActivity : Activity(), PopupNotifyClickListener, OnPushParseFailedLi
     override fun onSysNoticeOpened(title: String, summary: String, extMap: Map<String, String>) {
         Log.d("onSysNoticeOpened", "title: $title, summary: $summary, extMap: $extMap")
         handler.postDelayed({
-            val fallbackIntent = Intent(this, Class.forName("org.ccpit.dendenmushi.MainActivity"))
+            val fallbackIntent = Intent(this, getMainActivity())
             fallbackIntent.putExtra("title", title)
             fallbackIntent.putExtra("content", summary)
             startActivity(fallbackIntent)
