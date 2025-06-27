@@ -28,68 +28,79 @@ class ExpoAliyunPushNotificationsModule : Module() {
     init {
         EventManager.setModule(this)
     }
-  // Each module class must implement the definition function. The definition consists of components
-  // that describes the module's functionality and behavior.
-  // See https://docs.expo.dev/modules/module-api for more details about available components.
-  override fun definition() = ModuleDefinition {
 
-    OnCreate() {
-        initPushSdk()
+    // Each module class must implement the definition function. The definition consists of components
+    // that describes the module's functionality and behavior.
+    // See https://docs.expo.dev/modules/module-api for more details about available components.
+    override fun definition() = ModuleDefinition {
+
+        OnCreate() {
+            initPushSdk()
+        }
+        // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
+        // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
+        // The module will be accessible from `requireNativeModule('ExpoAliyunPushNotifications')` in JavaScript.
+        Name("ExpoAliyunPushNotifications")
+
+        // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
+        Constants(
+            "PI" to Math.PI
+        )
+
+        // Defines event names that the module can send to JavaScript.
+        Events(NOTIFICATION_OPENED_EVENT, DEVICE_REGISTERED_SUCCESS_EVENT, "onChange")
+
+        // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
+        Function("hello") {
+            "Hello world! 👋"
+        }
+
+        Function("getApiKey") {
+            val applicationInfo = appContext?.reactContext?.packageManager?.getApplicationInfo(
+                appContext?.reactContext?.packageName.toString(),
+                PackageManager.GET_META_DATA
+            )
+            val metaData = applicationInfo?.metaData
+            return@Function when (val value = metaData?.get("Ali_Push_App_Key")) {
+                is String -> value
+                is Int -> value.toString()
+                else -> null
+            }
+        }
+
+        Function("getDeviceId") {
+            val service = PushServiceFactory.getCloudPushService()
+            val deviceId = service?.deviceId
+            Log.d(TAG, "Device ID: $deviceId")
+            return@Function deviceId
+        }
+
+        // Defines a JavaScript function that always returns a Promise and whose native code
+        // is by default dispatched on the different thread than the JavaScript runtime runs on.
+        AsyncFunction("setValueAsync") { value: String ->
+            // Send an event to JavaScript.
+            sendEvent(
+                "onChange", mapOf(
+                    "value" to value
+                )
+            )
+        }
+
+        AsyncFunction("init") { value: String ->
+            // Send an event to JavaScript.
+            sendEvent(
+                "onChange", mapOf(
+                    "value" to value
+                )
+            )
+        }
     }
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('ExpoAliyunPushNotifications')` in JavaScript.
-    Name("ExpoAliyunPushNotifications")
-
-    // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
-    Constants(
-      "PI" to Math.PI
-    )
-
-    // Defines event names that the module can send to JavaScript.
-    Events(NOTIFICATION_OPENED_EVENT,DEVICE_REGISTERED_SUCCESS_EVENT,"onChange")
-
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      "Hello world! 👋"
-    }
-
-    Function("getApiKey") {
-      val applicationInfo = appContext?.reactContext?.packageManager?.getApplicationInfo(appContext?.reactContext?.packageName.toString(), PackageManager.GET_META_DATA)
-      val metaData = applicationInfo?.metaData
-      return@Function when (val value = metaData?.get("Ali_Push_App_Key")) {
-          is String -> value
-          is Int -> value.toString()
-          else -> null
-      }
-    }
-
-    Function("getDeviceId") {
-        val service = PushServiceFactory.getCloudPushService()
-        val deviceId = service?.deviceId
-        Log.d(TAG, "Device ID: $deviceId")
-        return@Function deviceId
-    }
-
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { value: String ->
-      // Send an event to JavaScript.
-      sendEvent("onChange", mapOf(
-        "value" to value
-      ))
-    }
-
-    AsyncFunction("init") { value: String ->
-      // Send an event to JavaScript.
-      sendEvent("onChange", mapOf(
-        "value" to value
-      ))
-    }
-  }
 
     private fun initPushSdk() {
-        val applicationInfo = appContext?.reactContext?.packageManager?.getApplicationInfo(appContext?.reactContext?.packageName.toString(), PackageManager.GET_META_DATA)
+        val applicationInfo = appContext?.reactContext?.packageManager?.getApplicationInfo(
+            appContext?.reactContext?.packageName.toString(),
+            PackageManager.GET_META_DATA
+        )
 
         val metaData = applicationInfo?.metaData
         val appKey = when (val value = metaData?.get("Ali_Push_App_Key")) {
@@ -112,11 +123,13 @@ class ExpoAliyunPushNotificationsModule : Module() {
         }
 
         val app = appContext.reactContext?.applicationContext as Application
-        PushServiceFactory.init(PushInitConfig.Builder()
-            .application(app)
-            .appKey(appKey)
-            .appSecret(appSecret)
-            .build())
+        PushServiceFactory.init(
+            PushInitConfig.Builder()
+                .application(app)
+                .appKey(appKey)
+                .appSecret(appSecret)
+                .build()
+        )
         initOthers()
         val service = PushServiceFactory.getCloudPushService()
         service.setDebug(true)
@@ -129,9 +142,10 @@ class ExpoAliyunPushNotificationsModule : Module() {
                 val deviceId = service?.deviceId
                 // 需要优化
                 Handler(Looper.getMainLooper()).postDelayed({
-                   this@ExpoAliyunPushNotificationsModule.sendEvent(
-                      DEVICE_REGISTERED_SUCCESS_EVENT,
-                      mapOf("deviceId" to deviceId))
+                    this@ExpoAliyunPushNotificationsModule.sendEvent(
+                        DEVICE_REGISTERED_SUCCESS_EVENT,
+                        mapOf("deviceId" to deviceId)
+                    )
                 }, 4000) // 延迟 4 秒
                 Log.d(TAG, "Device ID: $deviceId")
             }
@@ -149,9 +163,11 @@ class ExpoAliyunPushNotificationsModule : Module() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // 使用 appContext.reactContext 获取 Context
             val context = appContext.reactContext ?: return
-            val mNotificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val mNotificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-            val mChannel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
+            val mChannel =
+                NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
             // 配置通知渠道的属性
             mChannel.description = CHANNEL_DESC
             // 设置通知出现时的闪灯（如果 android 设备支持的话）
@@ -169,13 +185,24 @@ class ExpoAliyunPushNotificationsModule : Module() {
         val app = appContext.reactContext?.applicationContext as Application
         HuaWeiRegister.register(app) // 接入华为辅助推送
         HonorRegister.register(app)  // 荣耀推送
-        MiPushRegister.register(app, getMetaValue("Xiaomi_App_Id"), getMetaValue("Xiaomi_App_Key")) // 初始化小米辅助推送
+        MiPushRegister.register(
+            app,
+            getMetaValue("Xiaomi_App_Id"),
+            getMetaValue("Xiaomi_App_Key")
+        ) // 初始化小米辅助推送
         VivoRegister.registerAsync(app) // 接入vivo辅助推送
-        OppoRegister.registerAsync(app, getMetaValue("Oppo_App_Key"), getMetaValue("Oppo_App_Secret")) // OPPO辅助推送
+        OppoRegister.registerAsync(
+            app,
+            getMetaValue("Oppo_App_Key"),
+            getMetaValue("Oppo_App_Secret")
+        ) // OPPO辅助推送
     }
 
     private fun getMetaValue(name: String): String? {
-        val applicationInfo = appContext?.reactContext?.packageManager?.getApplicationInfo(appContext?.reactContext?.packageName.toString(), PackageManager.GET_META_DATA)
+        val applicationInfo = appContext?.reactContext?.packageManager?.getApplicationInfo(
+            appContext?.reactContext?.packageName.toString(),
+            PackageManager.GET_META_DATA
+        )
         val metaData = applicationInfo?.metaData
         return when (val value = metaData?.get(name)) {
             is String -> value
@@ -192,6 +219,7 @@ class ExpoAliyunPushNotificationsModule : Module() {
             )
         )
     }
+
     companion object {
         private const val NOTIFICATION_OPENED_EVENT = "onNotificationOpened"
         private const val DEVICE_REGISTERED_SUCCESS_EVENT = "onDeviceRegisteredSuccess"
