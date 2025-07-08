@@ -142,13 +142,13 @@ class MyMessageIntentService : AliyunMessageIntentService() {
         // 创建 PendingIntent
         val pendingIntent = if (mainActivityClass != null) {
             val intent = Intent(context, mainActivityClass)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
             intent.putExtra("title", title) // 添加标题参数
             intent.putExtra("content", content) // 添加内容参数
             PendingIntent.getActivity(
                 context,
                 0,
-                targetIntent,
+                intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         } else {
