@@ -1,7 +1,8 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
-    "modules": ["ExpoAliyunPushNotificationsModule"]
+    "modules": ["ExpoAliyunPushNotificationsModule"],
+    "appDelegateSubscribers": ["AliyunPushAppDelegateSubscriber"]
   },
   "android": {
     "modules": ["com.github.bqluan.aliyunpush.ExpoAliyunPushNotificationsModule"]
