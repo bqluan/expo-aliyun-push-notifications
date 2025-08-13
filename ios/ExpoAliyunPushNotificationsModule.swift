@@ -51,8 +51,14 @@ public class ExpoAliyunPushNotificationsModule: Module {
 
   func initPushSdk() {
     CloudPushSDK.setLogLevel(MPLogLevel.info)
+    guard let appKey = Bundle.main.object(forInfoDictionaryKey: "Ali_Push_App_Key") as? String,
+          let appSecret = Bundle.main.object(forInfoDictionaryKey: "Ali_Push_App_Secret") as? String else {
+
+          return
+    }
+
     // SDK初始化
-    CloudPushSDK.start(withAppkey: "335582740", appSecret: "facac7395a864390a6276f02b1f8b7e1") { res in
+    CloudPushSDK.start(withAppkey: appKey, appSecret: appSecret) { res in
       if res.success {
         print("SDK初始化成功 | DeviceID: \(CloudPushSDK.getDeviceId() ?? "N/A")")
       } else {

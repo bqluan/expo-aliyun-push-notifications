@@ -5,6 +5,8 @@ import path from 'path';
 interface AliPushConfig {
   aliPushAppKey: string;
   aliPushAppSecret: string;
+  aliPushIosAppKey: string;
+  aliPushIosAppSecret: string;
   oppoAppKey: string;
   oppoAppSecret: string;
   xiaomiAppId: string;
@@ -32,8 +34,8 @@ export default withAliyunConfig;
 function modifyInfoPlist(config: any, props: AliPushConfig) {
   return withInfoPlist(config, config => {
     Object.assign(config.modResults, {
-      Ali_Push_App_Key: props.aliPushAppKey,
-      Ali_Push_App_Secret: props.aliPushAppSecret
+      Ali_Push_App_Key: props.aliPushIosAppKey,
+      Ali_Push_App_Secret: props.aliPushIosAppSecret
     });
     return config;
   });
