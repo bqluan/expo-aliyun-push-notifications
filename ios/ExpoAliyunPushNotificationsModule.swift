@@ -10,14 +10,14 @@ public class ExpoAliyunPushNotificationsModule: Module {
     // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
     // The module will be accessible from `requireNativeModule('ExpoAliyunPushNotifications')` in JavaScript.
     OnCreate {
-       // 阿里云推送初始化代码
-           EventManager.shared.setModule(self)
-       initPushSdk()
-       setupAPNs()
-       NotificationCenter.default.addObserver(self,
-                                            selector: #selector(onMessageReceived(_:)),
-                                            name: NSNotification.Name("CCPDidReceiveMessageNotification"),
-                                            object: nil)
+      // 阿里云推送初始化代码
+      EventManager.shared.setModule(self)
+      initPushSdk()
+      setupAPNs()
+      NotificationCenter.default.addObserver(self,
+                                             selector: #selector(onMessageReceived(_:)),
+                                             name: NSNotification.Name("CCPDidReceiveMessageNotification"),
+                                             object: nil)
     }
     Name("ExpoAliyunPushNotifications")
 
@@ -27,7 +27,7 @@ public class ExpoAliyunPushNotificationsModule: Module {
     ])
 
     // Defines event names that the module can send to JavaScript.
-    Events("onChange","onNotificationOpened")
+    Events("onChange", "onNotificationOpened")
 
     // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
     Function("hello") {
@@ -35,7 +35,7 @@ public class ExpoAliyunPushNotificationsModule: Module {
     }
     // TODO
     Function("getDeviceId") {
-    CloudPushSDK.getDeviceId()
+      CloudPushSDK.getDeviceId()
       return CloudPushSDK.getDeviceId()
     }
 
@@ -48,39 +48,74 @@ public class ExpoAliyunPushNotificationsModule: Module {
       ])
     }
   }
-    func initPushSdk() {
-        CloudPushSDK.setLogLevel(MPLogLevel.info);
-        // SDK初始化
-        CloudPushSDK.start(withAppkey: "335582740", appSecret: "") { res in
-            if res.success {
-                print("SDK初始化成功 | DeviceID: \(CloudPushSDK.getDeviceId() ?? "N/A")")
-            } else {
-                print("初始化失败: \(res.error?.localizedDescription ?? "未知错误")")
+
+  func initPushSdk() {
+    CloudPushSDK.setLogLevel(MPLogLevel.info)
+    // SDK初始化
+    CloudPushSDK.start(withAppkey: "335582740", appSecret: "facac7395a864390a6276f02b1f8b7e1") { res in
+      if res.success {
+        print("SDK初始化成功 | DeviceID: \(CloudPushSDK.getDeviceId() ?? "N/A")")
+      } else {
+        print("初始化失败: \(res.error?.localizedDescription ?? "未知错误")")
+      }
+    }
+  }
+
+  // 请求用户授权
+  func setupAPNs() {
+    let center = UNUserNotificationCenter.current()
+    center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+      DispatchQueue.main.async {
+        if granted {
+          UIApplication.shared.registerForRemoteNotifications()
+        }
+      }
+    }
+  }
+
+  @objc func onMessageReceived(_ notification: Notification) {
+    guard var data = notification.object as? [String: Any],
+    let title = data["title"] as? String,
+    let content = data["content"] as? String else {
+      return
+    }
+    data["custom_message"] = "denden_ali_msg"
+    do {
+      if let contentData = content.data(using: .utf8) {
+        let jsonObject = try JSONSerialization.jsonObject(with: contentData, options: [])
+        if let contentDict = jsonObject as? [String: Any],
+
+        let subtitle = contentDict["subtitle"] as? String,
+        let type = contentDict["type"] as? String {
+          print("type: \(type)")
+          if type == "Conversation" {
+            EventManager.shared.sendEvent("onNotificationOpened", data)
+          } else {
+            showSystemNotification(title: title, body: subtitle, userInfo: contentDict)
+          }
             }
-        }
-    }
-    // 请求用户授权
-    func setupAPNs() {
-        let center = UNUserNotificationCenter.current()
-        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            DispatchQueue.main.async {
-                if granted {
-                    UIApplication.shared.registerForRemoteNotifications()
-                }
-                print("推送权限状态: \(granted ? "已授权" : "被拒绝")")
-            }
-        }
-    }
+      }
+        } catch {
 
-    @objc func onMessageReceived(_ notification: Notification) {
-        guard let data = notification.object as? [String: Any],
-              let title = data["title"] as? String,
-              let content = data["content"] as? String else {
-            return
         }
-         print("收到自定义消息")
-         EventManager.shared.sendEvent("onNotificationOpened", ["title": title,"content": content])
+  }
 
+  private func showSystemNotification(title: String, body: String, userInfo: [String: Any]) {
+    let content = UNMutableNotificationContent()
+    content.title = title
+    content.body = body
+    content.sound = UNNotificationSound.default
+    content.userInfo = userInfo
+    // Add badge count if needed
+    // content.badge = NSNumber(value: UIApplication.shared.applicationIconBadgeNumber + 1)
+    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
 
-    }
+    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+
+    UNUserNotificationCenter.current().add(request) { error in
+      if let error = error {
+        print("添加通知失败: \(error)")
+      }
+        }
+  }
 }
