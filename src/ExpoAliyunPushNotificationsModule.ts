@@ -9,6 +9,7 @@ declare class ExpoAliyunPushModule extends NativeModule<ExpoAliyunPushModuleEven
   getDeviceId(): string;
   setValueAsync(value: string): Promise<void>;
   init(): Promise<void>;
+  setIconBadgeNumberAsync(value: number): void;
 }
 
 // This call loads the native module object from the JSI.

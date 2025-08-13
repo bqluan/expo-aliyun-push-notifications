@@ -47,6 +47,9 @@ public class ExpoAliyunPushNotificationsModule: Module {
         "value": value
       ])
     }
+    Function("setIconBadgeNumberAsync") { (value: Int) in
+       UIApplication.shared.applicationIconBadgeNumber = value
+    }
   }
 
   func initPushSdk() {
@@ -112,8 +115,6 @@ public class ExpoAliyunPushNotificationsModule: Module {
     content.body = body
     content.sound = UNNotificationSound.default
     content.userInfo = userInfo
-    // Add badge count if needed
-    // content.badge = NSNumber(value: UIApplication.shared.applicationIconBadgeNumber + 1)
     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
 
     let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
@@ -121,7 +122,9 @@ public class ExpoAliyunPushNotificationsModule: Module {
     UNUserNotificationCenter.current().add(request) { error in
       if let error = error {
         print("添加通知失败: \(error)")
+      } else {
+        UIApplication.shared.applicationIconBadgeNumber = UIApplication.shared.applicationIconBadgeNumber + 1
       }
-        }
+    }
   }
 }
