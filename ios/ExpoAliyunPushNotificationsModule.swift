@@ -123,7 +123,7 @@ public class ExpoAliyunPushNotificationsModule: Module {
       if let error = error {
         print("添加通知失败: \(error)")
       } else {
-        UIApplication.shared.applicationIconBadgeNumber = UIApplication.shared.applicationIconBadgeNumber + 1
+        //UIApplication.shared.applicationIconBadgeNumber = UIApplication.shared.applicationIconBadgeNumber + 1
       }
     }
   }
