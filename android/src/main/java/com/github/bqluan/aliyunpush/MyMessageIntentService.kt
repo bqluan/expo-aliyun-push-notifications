@@ -72,7 +72,7 @@ class MyMessageIntentService : AliyunMessageIntentService() {
                     msgType = JSONObject(it.content).getString("type")
                 } catch (e: Exception) {
                 }
-                if (msgType === "Conversation") {
+                if (!isBackground && msgType == "Conversation") {
 
                     val jsonData = JSONObject().apply {
                         put("title", it.title ?: "")

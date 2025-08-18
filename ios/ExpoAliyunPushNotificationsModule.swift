@@ -14,10 +14,10 @@ public class ExpoAliyunPushNotificationsModule: Module {
       EventManager.shared.setModule(self)
       initPushSdk()
       setupAPNs()
-      NotificationCenter.default.addObserver(self,
-                                             selector: #selector(onMessageReceived(_:)),
-                                             name: NSNotification.Name("CCPDidReceiveMessageNotification"),
-                                             object: nil)
+//       NotificationCenter.default.addObserver(self,
+//                                              selector: #selector(onMessageReceived(_:)),
+//                                              name: NSNotification.Name("CCPDidReceiveMessageNotification"),
+//                                              object: nil)
     }
     Name("ExpoAliyunPushNotifications")
 
